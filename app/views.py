@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .models import Group,Chat
+from .models import Group
 # Create your views here.
 
 def home(request):
@@ -17,5 +17,4 @@ def home(request):
 
 def index(request,group_name):
     group = Group.objects.get(group_name = group_name)
-    chats = Chat.objects.filter(group = group)
-    return render(request,'app/index.html',{'groupname':group_name,'chats':chats})
+    return render(request,'app/index.html',{'groupname':group_name,'group':group})
