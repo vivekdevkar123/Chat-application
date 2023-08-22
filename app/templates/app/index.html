@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <h1>{{groupname}}</h1>
+
+    <textarea id="chat-log" cols="100" rows="20">
+
+        {% for chat in chats %}
+            {{chat.containt}}
+        {% endfor %}
+    </textarea><br>
+    <input type="text" id="input-chat" size="100"><br>
+    <input type="button" value="send" id="button-chat">
+
+    <div class="js-data">
+        {{groupname|json_script:"group_name"}}
+    </div>
+    <script>
+        const group_name = JSON.parse(document.getElementById('group_name').textContent);
+        console.log(group_name)
+        var ws = new WebSocket('ws://127.0.0.1:8000/ws/ac/' + group_name + '/');
+        // ws.onopen = function () {
+        //     console.log('websocket connection open....')
+        //     ws.send('hii from my side');
+        // }
+        // ws.onmessage = function (event) {
+        //     console.log('websocket connection message....', event)
+        // }
+        // ws.onerror = function (event) {
+        //     console.log('websocket connection error occurred....', event)
+        // }
+        // ws.onclose = function (event) {
+        //     console.log('websocket connection close....', event)
+        // }
+
+        ws.addEventListener('open', () => {
+            console.log('websocket connection open....')
+        })
+
+        ws.addEventListener('message', (event) => {
+            const data = JSON.parse(event.data);
+            document.getElementById('chat-log').value += (data.msg + "\n");
+            console.log('websocket connection message....', data);
+        })
+
+        ws.addEventListener('error', (event) => {
+            console.log('websocket connection error occurred....', event)
+        })
+
+        ws.addEventListener('close', (event) => {
+            console.log('websocket connection close....', event)
+        })
+
+        document.getElementById('button-chat').onclick = function (event) {
+            const message = document.getElementById('input-chat').value;
+            ws.send(JSON.stringify({
+                'msg': message
+            }));
+            document.getElementById('input-chat').value = "";
+        }
+
+    </script>
+
+</body>
+
+</html>
