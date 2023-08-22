@@ -4,51 +4,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Code Editor-like Textarea with CodeMirror</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.css">
 </head>
 
 <body>
 
-    <h1>{{groupname}}</h1>
-
-    <textarea id="chat-log" cols="100" rows="20">
-            {{group.containt}}
-    </textarea><br>
+    <h1>{{ groupname }}</h1>
 
     <div class="js-data">
-        {{groupname|json_script:"group_name"}}
+        {{ groupname|json_script:"group_name" }}
     </div>
+
+    <!-- Code Editor-like Textarea using CodeMirror -->
+    <textarea id="chat-log-editor">{{ group.containt }}</textarea>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/python/python.min.js"></script>
     <script>
         const group_name = JSON.parse(document.getElementById('group_name').textContent);
-        console.log(group_name)
+        console.log(group_name);
         var ws = new WebSocket('ws://127.0.0.1:8000/ws/ac/' + group_name + '/');
 
         ws.addEventListener('open', () => {
-            console.log('websocket connection open....')
-        })
+            console.log('websocket connection open....');
+        });
+
+        ws.addEventListener('error', (event) => {
+            console.log('websocket connection error occurred....', event);
+        });
+
+        ws.addEventListener('close', (event) => {
+            console.log('websocket connection close....', event);
+        });
+
+        const chatLogEditor = document.getElementById('chat-log-editor');
+
+        // Initialize CodeMirror
+        const editor = CodeMirror.fromTextArea(chatLogEditor, {
+            mode: "python",
+            lineNumbers: true,
+            theme: "default"
+        });
+
+        // Set a flag to prevent infinite loop
+        let updatingFromWebSocket = false;
+
+        // Attach input event to CodeMirror instance
+        editor.on("change", () => {
+            if (!updatingFromWebSocket) {
+                var message = editor.getValue();
+                console.log("Sending message:", message);
+                ws.send(JSON.stringify({
+                    'msg': message
+                }));
+            }
+        });
 
         ws.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
-            document.getElementById('chat-log').value = (data.msg);
-        })
-
-        ws.addEventListener('error', (event) => {
-            console.log('websocket connection error occurred....', event)
-        })
-
-        ws.addEventListener('close', (event) => {
-            console.log('websocket connection close....', event)
-        })
-
-
-        document.getElementById('chat-log').addEventListener('input', function (event) {
-            const message = event.target.value;
-            ws.send(JSON.stringify({
-                'msg': message
-            }));
+            updatingFromWebSocket = true;
+            const cursor = editor.getCursor(); // Get current cursor position
+            editor.setValue(data.msg); // Update the content as-is
+            editor.setCursor(cursor.line, cursor.ch); // Set cursor back to the previous position
+            editor.clearHistory();
+            updatingFromWebSocket = false;
         });
-
-
     </script>
 
 </body>
