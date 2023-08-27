@@ -24,7 +24,7 @@
     <!-- Code Editor-like Textarea using CodeMirror -->
 
     <!-- Run Code Button -->
-    <button id="run-button" onclick="RunCode()">Run Code</button>
+    <button id="run-button">Run Code</button>
 
     <!-- Output Div -->
     <div id="output-box"></div>
@@ -74,17 +74,33 @@
         });
 
         // Run Code Button
-        async function RunCode() {
-            let response = await fetch('http://127.0.0.1:8000/result/output/', {
-                method: 'get',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    "Content-Type": "application/json",
+        const runButton = document.getElementById('run-button');
+        runButton.addEventListener('click', async () => {
+            try {
+                const code = editor.getValue();
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                const response = await fetch('http://127.0.0.1:8000/result/output/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code: code })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data);
+                    const outputBox = document.getElementById('output-box');
+                    outputBox.textContent = data.output;
+                } else {
+                    console.log('Error:', response.statusText);
                 }
-            })
-            let data = await response.json()
-            console.log(await data);
-        }
+            } catch (error) {
+                console.log('Error:', error);
+            }
+        });
 
 
         ws.addEventListener('message', (event) => {
