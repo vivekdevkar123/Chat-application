@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Editor-like Textarea with CodeMirror</title>
+    <title>Code Editor with Run Code</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
@@ -16,8 +17,19 @@
         {{ groupname|json_script:"group_name" }}
     </div>
 
+    <form>
+        {% csrf_token %}
+        <textarea id="chat-log-editor">{{ group.containt }}</textarea>
+    </form>
     <!-- Code Editor-like Textarea using CodeMirror -->
-    <textarea id="chat-log-editor">{{ group.containt }}</textarea>
+
+    <!-- Run Code Button -->
+    <button id="run-button" onclick="RunCode()">Run Code</button>
+
+    <!-- Output Div -->
+    <div id="output-box"></div>
+
+    <div id="hackerrank-output-box"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/python/python.min.js"></script>
@@ -60,6 +72,20 @@
                 }));
             }
         });
+
+        // Run Code Button
+        async function RunCode() {
+            let response = await fetch('http://127.0.0.1:8000/result/output/', {
+                method: 'get',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    "Content-Type": "application/json",
+                }
+            })
+            let data = await response.json()
+            console.log(await data);
+        }
+
 
         ws.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
