@@ -7,6 +7,58 @@
     <title>Code Editor with Run Code</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #chat-log-editor {
+            width: 100%;
+            height: 300px;
+            font-size: 20px;
+        }
+
+        #output-box {
+            width: 95%;
+            height: 200px;
+            font-size: 25px;
+            resize: none;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+
+        /* Loader animation */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 2s linear infinite;
+            margin-left: 10px;
+            display: none;
+            /* Initially hidden */
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #run-button {
+            width: max-content;
+            height: max-content;
+            background-color: palegreen;
+            border: 2px solid gray;
+            border-radius: 5px;
+            margin: 20px;
+        }
+    </style>
 </head>
 
 <body>
@@ -25,9 +77,10 @@
 
     <!-- Run Code Button -->
     <button id="run-button">Run Code</button>
+    <span class="loader" id="loader"></span>
 
-    <!-- Output Div -->
-    <div id="output-box"></div>
+    <!-- Output Textarea -->
+    <textarea id="output-box" readonly></textarea> <!-- Add readonly attribute -->
 
     <div id="hackerrank-output-box"></div>
 
@@ -79,6 +132,13 @@
             try {
                 const code = editor.getValue();
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const loader = document.getElementById('loader');
+                const outputBox = document.getElementById('output-box');
+
+                // Show loader and hide output
+                loader.style.display = 'inline-block';
+                outputBox.textContent = '';
+                outputBox.style.display = 'none';
 
                 const response = await fetch('http://127.0.0.1:8000/result/output/', {
                     method: 'POST',
@@ -92,16 +152,20 @@
                 if (response.ok) {
                     const data = await response.json();
                     console.log(data);
-                    const outputBox = document.getElementById('output-box');
                     outputBox.textContent = data.output;
+                    outputBox.style.display = 'block';
                 } else {
                     console.log('Error:', response.statusText);
                 }
+
+                // Hide loader
+                loader.style.display = 'none';
             } catch (error) {
                 console.log('Error:', error);
+                // Hide loader on error as well
+                loader.style.display = 'none';
             }
         });
-
 
         ws.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
