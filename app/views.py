@@ -7,10 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def run_code(request):
-    print("we got you\n\n\n\n")
     if request.method == 'POST':
         code = json.loads(request.body)['code']
-        print(code)
+        inputvalue = json.loads(request.body)['inputvalue']
         # Replace with your actual API URL and API key
         url = "https://online-code-compiler.p.rapidapi.com/v1/"
 
@@ -18,7 +17,7 @@ def run_code(request):
 	        "language": "python3",
 	        "version": "latest",
 	        "code": code,
-	        "input": None
+	        "input": inputvalue
         }
         headers = {
 	        "content-type": "application/json",
@@ -27,9 +26,7 @@ def run_code(request):
         }
         
         response = requests.post(url, json=payload, headers=headers)
-        data = response.json()
-        print(data['output'])
-        
+        data = response.json()        
         if response.status_code == 200:
             output = data['output']
         else:
@@ -55,10 +52,5 @@ def home(request):
 
 def index(request, group_name):
     group = Group.objects.get(group_name=group_name)
-    
-    # if request.method == 'POST':
-    #     code = request.POST.get('code')
-    #     output = compile_and_run(code)
-    #     return JsonResponse({'output': output})
     
     return render(request, 'app/index.html', {'groupname': group_name, 'group': group})

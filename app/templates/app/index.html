@@ -27,6 +27,15 @@
             margin-right: 10px;
         }
 
+        #input-box {
+            width: 95%;
+            height: 200px;
+            font-size: 25px;
+            resize: none;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+
         /* Loader animation */
         .loader {
             border: 3px solid #f3f3f3;
@@ -58,12 +67,35 @@
             border-radius: 5px;
             margin: 20px;
         }
+
+
+        .heading-text {
+            font-family: Oswald;
+            font-size: 2.25em;
+            font-weight: bold;
+            color: black;
+            text-align: center;
+            background-color: #a6efff;
+            background-image: linear-gradient(19deg, #79e6ff 0%, #e8b6ff 100%);
+        }
+
+        .heading {
+            margin-top: 30px;
+        }
+
+        .input-output {
+            display: flex;
+            margin: auto;
+
+        }
     </style>
 </head>
 
 <body>
 
-    <h1>{{ groupname }}</h1>
+    <div class="heading">
+        <p class="heading-text"> Room Name : {{ groupname }} </p>
+    </div>
 
     <div class="js-data">
         {{ groupname|json_script:"group_name" }}
@@ -79,8 +111,19 @@
     <button id="run-button">Run Code</button>
     <span class="loader" id="loader"></span>
 
-    <!-- Output Textarea -->
-    <textarea id="output-box" readonly></textarea> <!-- Add readonly attribute -->
+    <div class="input-output">
+
+        <div class="input">
+            <label for="input-box">Enter Your Input</label>
+            <textarea id="input-box"></textarea>
+        </div>
+
+        <div class="output">
+            <label for="output-box">Output</label>
+            <textarea id="output-box" readonly></textarea>
+        </div>
+
+    </div>
 
     <div id="hackerrank-output-box"></div>
 
@@ -131,6 +174,7 @@
         runButton.addEventListener('click', async () => {
             try {
                 const code = editor.getValue();
+                const inputvalue = document.getElementById('input-box').value;
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                 const loader = document.getElementById('loader');
                 const outputBox = document.getElementById('output-box');
@@ -146,7 +190,7 @@
                         'X-CSRFToken': csrfToken,
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ code: code })
+                    body: JSON.stringify({ code: code, inputvalue: inputvalue })
                 });
 
                 if (response.ok) {
