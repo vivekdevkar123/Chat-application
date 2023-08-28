@@ -157,17 +157,27 @@
 
         // Set a flag to prevent infinite loop
         let updatingFromWebSocket = false;
-
+        var inputBox = document.getElementById('input-box');
         // Attach input event to CodeMirror instance
         editor.on("change", () => {
             if (!updatingFromWebSocket) {
                 var message = editor.getValue();
                 console.log("Sending message:", message);
                 ws.send(JSON.stringify({
-                    'msg': message
+                    'msg': message,
+                    'input': inputBox.value,
                 }));
             }
         });
+
+        inputBox.addEventListener('input', () => {
+            var message = editor.getValue();
+            console.log("Sending message:", message);
+            ws.send(JSON.stringify({
+                'msg': message,
+                'input': inputBox.value,
+            }));
+        })
 
         // Run Code Button
         const runButton = document.getElementById('run-button');
@@ -213,12 +223,14 @@
 
         ws.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
+            console.log(data);
             updatingFromWebSocket = true;
             const cursor = editor.getCursor(); // Get current cursor position
             editor.setValue(data.msg); // Update the content as-is
             editor.setCursor(cursor.line, cursor.ch); // Set cursor back to the previous position
             editor.clearHistory();
             updatingFromWebSocket = false;
+            inputBox.value = data.input;
         });
     </script>
 
