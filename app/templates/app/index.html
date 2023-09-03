@@ -23,12 +23,15 @@
             height: 200px;
             font-size: 25px;
             resize: none;
-            margin-top: 23 width: 95%;
+            margin-top: 10px;
+        }
+
+        #input-box {
+            width: 92.5%;
             height: 200px;
             font-size: 25px;
             resize: none;
             margin-top: 10px;
-            margin-right: 10px;
         }
 
         /* Loader animation */
@@ -63,7 +66,6 @@
             margin: 20px;
         }
 
-
         .heading-text {
             font-family: Oswald;
             font-size: 2.25em;
@@ -78,20 +80,15 @@
             margin-top: 30px;
         }
 
-        .input-output {
-            display: flex;
-            margin: auto;
-
+        .output {
+            margin-right: 50px;
         }
-
-        23
     </style>
 </head>
 
 <body>
-
     <div class="heading">
-        <p class="heading-text"> Room Name : {{ groupname }} </p>
+        <p class="heading-text"> Room Name: {{ groupname }} </p>
     </div>
 
     <div class="js-data">
@@ -102,24 +99,20 @@
         {% csrf_token %}
         <textarea id="chat-log-editor">{{ group.containt }}</textarea>
     </form>
+
     <!-- Code Editor-like Textarea using CodeMirror -->
 
     <!-- Run Code Button -->
     <button id="run-button">Run Code</button>
     <span class="loader" id="loader"></span>
 
-    <div class="input-output">
-
-        <div class="input">
-            <label for="input-box">Enter Your Input</label>
-            <textarea id="input-box"></textarea>
-        </div>
-
-        <div class="output">
-            <label for="output-box">Output</label>
-            <textarea id="output-box" readonly></textarea>
-        </div>
-
+    <div class="input">
+        <label for="input-box">Enter Your Input</label><br>
+        <textarea id="input-box"></textarea>
+    </div>
+    <div class="output">
+        <label for="output-box">Output</label><br>
+        <textarea id="output-box" readonly></textarea>
     </div>
 
     <div id="hackerrank-output-box"></div>
@@ -127,35 +120,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/python/python.min.js"></script>
     <script>
-        const group_name = JSON.parse(document.getElementById('group_name').textContent);
+        const group_name = JSON.parse(document.querySelector('.js-data').textContent);
         console.log(group_name);
         var ws = new WebSocket('ws://127.0.0.1:8000/ws/ac/' + group_name + '/');
 
         ws.addEventListener('open', () => {
-            console.log('websocket connection open....');
+            console.log('WebSocket connection open....');
         });
 
         ws.addEventListener('error', (event) => {
-            console.log('websocket connection error occurred....', event);
+            console.log('WebSocket connection error occurred....', event);
         });
 
         ws.addEventListener('close', (event) => {
-            console.log('websocket connection close....', event);
+            console.log('WebSocket connection close....', event);
         });
 
         const chatLogEditor = document.getElementById('chat-log-editor');
-
-        // Initialize CodeMirror
         const editor = CodeMirror.fromTextArea(chatLogEditor, {
             mode: "python",
             lineNumbers: true,
             theme: "default"
         });
 
-        // Set a flag to prevent infinite loop23
         let updatingFromWebSocket = false;
         var inputBox = document.getElementById('input-box');
-        // Attach input event to CodeMirror instance
+
         editor.on("change", () => {
             if (!updatingFromWebSocket) {
                 var message = editor.getValue();
@@ -174,19 +164,17 @@
                 'msg': message,
                 'input': inputBox.value,
             }));
-        })
+        });
 
-        // Run Code Button
         const runButton = document.getElementById('run-button');
         runButton.addEventListener('click', async () => {
             try {
                 const code = editor.getValue();
-                const inputvalue = document.getElementById('input-box').value;
+                const inputvalue = inputBox.value;
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-                const loader = document.getElem23entById('loader');
+                const loader = document.getElementById('loader');
                 const outputBox = document.getElementById('output-box');
 
-                // Show loader and hide output
                 loader.style.display = 'inline-block';
                 outputBox.textContent = '';
                 outputBox.style.display = 'none';
@@ -208,26 +196,25 @@
                 } else {
                     console.log('Error:', response.statusText);
                 }
-                23
+
+                loader.style.display = 'none';
+            } catch (error) {
                 console.log('Error:', error);
-                // Hide loader on error as well
                 loader.style.display = 'none';
             }
         });
 
         ws.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
-            console.log(data);
             updatingFromWebSocket = true;
-            const cursor = editor.getCursor(); // Get current cursor position
-            editor.setValue(data.msg); // Update the content as-is
-            editor.setCursor(cursor.line, cursor.ch); // Set cursor back to the previous position
+            const cursor = editor.getCursor();
+            editor.setValue(data.msg);
+            editor.setCursor(cursor.line, cursor.ch);
             editor.clearHistory();
             updatingFromWebSocket = false;
             inputBox.value = data.input;
         });
     </script>
-
 </body>
 
 </html>
