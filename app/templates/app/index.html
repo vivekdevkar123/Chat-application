@@ -23,12 +23,7 @@
             height: 200px;
             font-size: 25px;
             resize: none;
-            margin-top: 10px;
-            margin-right: 10px;
-        }
-
-        #input-box {
-            width: 95%;
+            margin-top: 23 width: 95%;
             height: 200px;
             font-size: 25px;
             resize: none;
@@ -88,6 +83,8 @@
             margin: auto;
 
         }
+
+        23
     </style>
 </head>
 
@@ -155,7 +152,7 @@
             theme: "default"
         });
 
-        // Set a flag to prevent infinite loop
+        // Set a flag to prevent infinite loop23
         let updatingFromWebSocket = false;
         var inputBox = document.getElementById('input-box');
         // Attach input event to CodeMirror instance
@@ -186,7 +183,7 @@
                 const code = editor.getValue();
                 const inputvalue = document.getElementById('input-box').value;
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-                const loader = document.getElementById('loader');
+                const loader = document.getElem23entById('loader');
                 const outputBox = document.getElementById('output-box');
 
                 // Show loader and hide output
@@ -211,10 +208,7 @@
                 } else {
                     console.log('Error:', response.statusText);
                 }
-
-                // Hide loader
-                loader.style.display = 'none';
-            } catch (error) {
+                23
                 console.log('Error:', error);
                 // Hide loader on error as well
                 loader.style.display = 'none';
