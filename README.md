@@ -4,17 +4,6 @@
 
 **Project Description:** CodeCollab is a real-time collaborative code editor that allows multiple users to code together simultaneously. It's a web-based platform where developers can create and join coding rooms, write, edit, and execute code in various programming languages, and see real-time updates from their collaborators. CodeCollab is designed to streamline remote pair programming, facilitate coding interviews, and enhance collaborative coding experiences.
 
-**Repository Name:** code-collab
-
-## Table of Contents
-
-1. [Features](#features)
-2. [Tech Stack](#tech-stack)
-3. [Installation](#installation)
-4. [Usage](#usage)
-5. [Contributing](#contributing)
-6. [License](#license)
-
 ---
 
 ## Features
@@ -67,3 +56,58 @@ To install and run CodeCollab locally, follow these steps:
 1. Clone the repository:
    ```shell
    git clone https://github.com/your-username/code-collab.git
+
+2. Navigate to the project directory: 
+
+```bash
+  cd code-collab
+```
+
+3. Set up a virtual environment (optional but recommended):
+
+```bash
+  python -m venv venv
+  source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+```
+
+4. Install the Python dependencies:
+```bash
+  pip install -r requirements.txt
+```
+
+5. Run database migrations:
+```bash
+  python manage.py migrate
+```
+6. Start the Django development server:
+```bash
+  python manage.py runserver
+``` 
+Access the application in your web browser at [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+
+---
+
+## Screenshots
+
+![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+
+---
+
+## 🔗 Links
+[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://vivekdevkar123.github.io/Portfolio/)
+[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/vivekdevkar123/)
+[![twitter](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github)](https://github.com/vivekdevkar123)
+
+---
+
+## Authors
+
+- [@Vivek Devkar](https://www.github.com/vivekdevkar123)
+
+---
+
+## Feedback
+
+If you have any feedback, please reach out to us at mrvivekdevkar123@gmail.com
+
+---
