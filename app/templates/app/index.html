@@ -9,42 +9,52 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background-color: #ebebeb;
         }
 
         #chat-log-editor {
             width: 100%;
             height: 300px;
             font-size: 20px;
+            background-color: #fff;
+            border: 2px solid #932F6D;
+            border-radius: 5px;
         }
 
         #output-box {
-            width: 95%;
+            width: 98%;
             height: 200px;
             font-size: 25px;
             resize: none;
             margin-top: 10px;
+            background-color: #fff;
+            border: 2px solid #932F6D;
+            border-radius: 5px;
+            margin-right: 10px;
         }
 
         #input-box {
-            width: 92.5%;
+            width: 98%;
             height: 200px;
             font-size: 25px;
             resize: none;
             margin-top: 10px;
+            background-color: #fff;
+            border: 2px solid #932F6D;
+            border-radius: 5px;
+            margin-right: 10px;
         }
 
-        /* Loader animation */
         .loader {
             border: 3px solid #f3f3f3;
-            border-top: 3px solid #3498db;
+            border-top: 3px solid #932F6D;
             border-radius: 50%;
             width: 20px;
             height: 20px;
             animation: spin 2s linear infinite;
             margin-left: 10px;
             display: none;
-            /* Initially hidden */
         }
 
         @keyframes spin {
@@ -60,28 +70,36 @@
         #run-button {
             width: max-content;
             height: max-content;
-            background-color: palegreen;
+            background-color: #932F6D;
+            color: #fff;
             border: 2px solid gray;
             border-radius: 5px;
             margin: 20px;
+            padding: 15px 30px;
+            font-size: 20px;
+        }
+
+        #run-button:hover {
+            background-color: #a85ba8;
         }
 
         .heading-text {
-            font-family: Oswald;
+            font-family: 'Oswald', sans-serif;
             font-size: 2.25em;
             font-weight: bold;
-            color: black;
+            color: #fff;
             text-align: center;
-            background-color: #a6efff;
-            background-image: linear-gradient(19deg, #79e6ff 0%, #e8b6ff 100%);
+            background-color: #932F6D;
+            padding: 10px;
+            border-radius: 5px;
         }
 
         .heading {
             margin-top: 30px;
         }
 
-        .output {
-            margin-right: 50px;
+        form {
+            margin-right: 20px;
         }
     </style>
 </head>
@@ -177,7 +195,6 @@
 
                 loader.style.display = 'inline-block';
                 outputBox.textContent = '';
-                outputBox.style.display = 'none';
 
                 const response = await fetch('http://127.0.0.1:8000/result/output/', {
                     method: 'POST',
